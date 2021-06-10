@@ -15,6 +15,7 @@ app = Flask(__name__)
 app.url_map.strict_slashes = False
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DB_CONNECTION_STRING')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config["JWT_SECRET_KEY"] = "01cdeef14f0a17d28d723f35a2ba3670"
 MIGRATE = Migrate(app, db)
 db.init_app(app)
 CORS(app)
@@ -38,6 +39,24 @@ def handle_hello():
     }
 
     return jsonify(response_body), 200
+
+@app.route('/sign-up', methods=['POST'])
+def sign_up():
+    data = request.json
+    print(f"data: {data}")
+    user = User.create(name=data.get('name'), last_name= data.get('last_name'), email=data.get('email'), password=data.get('password')
+    )
+    
+    if not isinstance(user, User):
+        return jsonify({'msg': "Ha ocurrido un problema"}), 500
+    return jsonify(user.serialize()), 201
+
+
+
+
+
+
+
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
