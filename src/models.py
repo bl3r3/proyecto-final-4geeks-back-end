@@ -82,18 +82,53 @@ class User(Person):
       # do not serialize the password, its a security breach
     }
 
-
+#PROFESIONAL
 class Profesional(Person):
   __tablename__ = None
   is_verified = db.Column(db.Boolean, unique=False, default=False)
-  id_image = db.Column(db.String(240))
-  title_image = db.Column(db.String(240))
-
-
+  
   __mapper_args__ = {
         'polymorphic_identity':'profesional'
     }
 
+  def __init__(self, **kwargs):
+    print(kwargs)
+    self.name = kwargs.get('name')
+    self.last_name = kwargs.get('last_name')
+    self.email = kwargs.get('email')
+    self.salt = os.urandom(16).hex()
+    self.set_password(kwargs.get('password'))
+
+  @classmethod
+  def create_profesional(cls, **kwargs):
+    profesional = cls(**kwargs)
+    db.session.add(profesional)
+
+    try:
+      db.session.commit()
+    except Exception as error:
+      print(error.args)
+      db.session.rollback()
+      return False
+
+    return profesional
+
+  def serialize(self):
+    return {
+      "id": self.id,
+      "name": self.name,
+      "last_name": self.last_name,
+      "email": self.email,
+      "type": self.type,
+      # do not serialize the password, its a security breach
+    }
+  def set_password(self, password):
+    self.hased_password = generate_password_hash(
+      f"{password}{self.salt}"
+    )
+
+  def check_password(self, password):
+    return check_password_hash(self.hased_password, f"{password}{self.salt}")
 
 class Report(db.Model):
   __tablename__ = 'report'

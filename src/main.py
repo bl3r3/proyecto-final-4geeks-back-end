@@ -8,7 +8,8 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User
+from models import db, User, Profesional, Person
+from flask_jwt_extended import create_access_token, JWTManager
 #from models import Person
 
 app = Flask(__name__)
@@ -20,6 +21,7 @@ MIGRATE = Migrate(app, db)
 db.init_app(app)
 CORS(app)
 setup_admin(app)
+jwt = JWTManager(app)
 
 # Handle/serialize errors like a JSON object
 @app.errorhandler(APIException)
@@ -51,9 +53,35 @@ def sign_up():
         return jsonify({'msg': "Ha ocurrido un problema"}), 500
     return jsonify(user.serialize()), 201
 
+@app.route('/sign-up-profesional', methods=['POST'])
+def sign_up_profesional():
+    data = request.json
+    print(f"data: {data}")
+    profesional = Profesional.create_profesional(name=data.get('name'), last_name= data.get('last_name'), email=data.get('email'), password=data.get('password')
+    )
+    
+    if not isinstance(profesional, Profesional):
+        return jsonify({'msg': "Ha ocurrido un problema"}), 500
+    return jsonify(profesional.serialize()), 201
 
+@app.route('/log-in', methods=["POST"])
+def log_in():
+    data = request.json
+    print(f"data: {data}")
+    user = User.query.filter_by(email=data['email']).one_or_none()
 
+    if user is None:
+        return jsonify({"msg": "El user no existe"}), 404
 
+    if not user.check_password(data.get('password')):
+        return jsonify({"msg": "bad credentials"}), 400
+
+    token = create_access_token(identity=user.id)
+    
+    return jsonify({
+        "user": user.serialize(),
+        "token": token
+        }), 200
 
 
 
