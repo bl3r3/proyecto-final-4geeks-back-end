@@ -98,6 +98,7 @@ class Profesional(Person):
     self.email = kwargs.get('email')
     self.salt = os.urandom(16).hex()
     self.set_password(kwargs.get('password'))
+    self.is_verified = kwargs.get('is_verified')
 
   @classmethod
   def create_profesional(cls, **kwargs):
@@ -146,10 +147,43 @@ class Appointment(db.Model):
   id = db.Column(db.Integer, primary_key=True)
   created_date = db.Column(db.DateTime(timezone=True), default=db.func.now())
   day_date = db.Column(db.String(50), nullable=False)
-  start_date = db.Column(db.String(50), nullable=False)
-  end_date = db.Column(db.String(50), nullable=False)
+  schedule = db.Column(db.String(50), nullable=False)
+  via = db.Column(db.String(50), nullable=False)
   user_id = db.Column(db.Integer, db.ForeignKey('person.id'))
   profesional_id = db.Column(db.Integer, db.ForeignKey('person.id'))
+
+  def __init__(self, **kwargs):
+    print(kwargs)
+    self.day_date = kwargs.get('day_date')
+    self.schedule = kwargs.get('schedule')
+    self.via = kwargs.get('via')
+    self.user_id = kwargs.get('user_id')
+    self.profesional_id = kwargs.get('profesional_id')
+
+  @classmethod
+  def create(cls, **kwargs):
+    appointment = cls(**kwargs)
+    db.session.add(appointment)
+
+    try:
+      db.session.commit()
+    except Exception as error:
+      print(error.args)
+      db.session.rollback()
+      return False
+    return appointment
+
+  def serialize(self):
+    return {
+      "id": self.id,
+      "day_date": self.day_date,
+      "schedule": self.schedule,
+      "via": self.via,
+      "user_id": self.user_id,
+      "profesional_id": self.profesional_id
+    }
+
+
 
 
 

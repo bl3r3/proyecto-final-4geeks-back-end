@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User, Profesional, Person
+from models import db, User, Profesional, Person, Appointment
 from flask_jwt_extended import create_access_token, JWTManager
 #from models import Person
 
@@ -57,7 +57,7 @@ def sign_up():
 def sign_up_profesional():
     data = request.json
     print(f"data: {data}")
-    profesional = Profesional.create_profesional(name=data.get('name'), last_name= data.get('last_name'), email=data.get('email'), password=data.get('password')
+    profesional = Profesional.create_profesional(name=data.get('name'), last_name= data.get('last_name'), email=data.get('email'), password=data.get('password'), is_verified=data.get('is_verified')
     )
     
     if not isinstance(profesional, Profesional):
@@ -83,6 +83,32 @@ def log_in():
         "token": token
         }), 200
 
+@app.route("/profesionals", methods=["GET"])
+def get_profesionals():
+    profesionals = Profesional.query.all();
+    profesionals_to_list = list(map(lambda el: el.serialize(), profesionals))
+    return jsonify(profesionals_to_list), 200
+
+@app.route('/<int:id>/dates', methods=['GET','POST'])
+def dates(id):
+    if request.method == 'POST':
+        data = request.json
+        new_dict = {
+            "date": data["data"]["date"],
+            "schedule": data["data"]["schedule"],
+            "via": data["data"]["via"],
+            "profesional_id": data["data"]["profesional_id"]
+        }
+        appointment = Appointment.create(day_date=new_dict.get('date'), schedule= new_dict.get('schedule'), via=new_dict.get('via'), user_id=id, profesional_id=new_dict.get('profesional_id'))
+        
+        print(appointment)
+        if not isinstance(appointment, Appointment):
+            return jsonify({'msg': "Ha ocurrido un problema"}), 500
+        return jsonify(appointment.serialize()), 201
+    else:
+        appointment = Appointment.query.filter_by(user_id=id).all()
+        appointment_to_list = list(map(lambda el: el.serialize(), appointment))
+        return jsonify(appointment_to_list), 200
 
 
 
