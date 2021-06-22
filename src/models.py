@@ -114,6 +114,8 @@ class Profesional(Person):
 
     return profesional
 
+
+
   def serialize(self):
     return {
       "id": self.id,
@@ -180,7 +182,8 @@ class Appointment(db.Model):
       "schedule": self.schedule,
       "via": self.via,
       "user_id": self.user_id,
-      "profesional_id": self.profesional_id
+      "profesional_id": self.profesional_id,
+      "profesional": self.profesional.serialize()
     }
 
 

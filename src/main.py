@@ -89,6 +89,14 @@ def get_profesionals():
     profesionals_to_list = list(map(lambda el: el.serialize(), profesionals))
     return jsonify(profesionals_to_list), 200
 
+@app.route("/profesionals/<int:id>", methods=["GET"])
+def get_profesional(id):
+    profesional = Profesional.query.filter_by(id=id)
+    profesional_to_list = list(map(lambda el: el.serialize(), profesional))
+    return jsonify(profesional_to_list), 200
+
+
+
 @app.route('/<int:id>/dates', methods=['GET','POST'])
 def dates(id):
     if request.method == 'POST':
@@ -99,6 +107,7 @@ def dates(id):
             "via": data["data"]["via"],
             "profesional_id": data["data"]["profesional_id"]
         }
+
         appointment = Appointment.create(day_date=new_dict.get('date'), schedule= new_dict.get('schedule'), via=new_dict.get('via'), user_id=id, profesional_id=new_dict.get('profesional_id'))
         
         print(appointment)
