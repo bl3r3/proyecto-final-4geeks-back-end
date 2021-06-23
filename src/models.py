@@ -177,7 +177,7 @@ class Exercise(db.Model):
   id = db.Column(db.Integer, primary_key=True)
   description = db.Column(db.String(240), nullable=False)
   #THIS COLUMN WILL BE USED FOR DECIDE EXERCISE STATUS
-  status = db.Column(db.String(50), nullable=False)
+  status = db.Column(db.Boolean, unique=False, default=False)
 
   def __init__(self, **kwargs):
     print(kwargs)

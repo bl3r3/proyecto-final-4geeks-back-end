@@ -140,7 +140,7 @@ def reports(id):
         report_to_list = list(map(lambda el: el.serialize(), report))
         return jsonify(report_to_list), 200
 
-@app.route('/<int:id>/reports', methods=['GET','POST'])
+@app.route('/<int:id>/reports/exercise', methods=['GET','POST'])
 def exercises(id):
     if request.method == 'POST':
         data = request.json
