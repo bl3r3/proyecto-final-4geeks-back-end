@@ -136,9 +136,9 @@ class Report(db.Model):
   __tablename__ = 'report'
   id = db.Column(db.Integer, primary_key=True)
   diagnostic = db.Column(db.String(240))
-  exercise_id = db.Column(db.Integer, db.ForeignKey('exercise.id'))
   user_id = db.Column(db.Integer, db.ForeignKey('person.id'))
   profesional_id = db.Column(db.Integer, db.ForeignKey('person.id'))
+  exercise_id = db.Column(db.Integer, db.ForeignKey('exercise.id'))
 
   def __init__(self, **kwargs):
     print(kwargs)
@@ -178,10 +178,11 @@ class Exercise(db.Model):
   description = db.Column(db.String(240), nullable=False)
   #THIS COLUMN WILL BE USED FOR DECIDE EXERCISE STATUS
   status = db.Column(db.Boolean, unique=False, default=False)
+  report = db.relationship("Report", backref="exercise")
 
   def __init__(self, **kwargs):
     print(kwargs)
-    self.description = kwargs.get('diagnostic')
+    self.description = kwargs.get('description')
     self.status = kwargs.get('status')
 
   @classmethod

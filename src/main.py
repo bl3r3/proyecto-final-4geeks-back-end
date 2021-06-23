@@ -119,12 +119,12 @@ def dates(id):
         return jsonify(appointment_to_list), 200
 
 
-@app.route('/<int:id>/reports', methods=['GET','POST'])
-def reports(id):
+@app.route('/reports', methods=['GET','POST'])
+def reports():
     if request.method == 'POST':
         data = request.json
         print(f"data: {data}")
-        report = Report.create(diagnostic=data.get('diagnostic'), exercise_id= data.get('exercise_id'), profesional_id=id, user_id=data.get('user_id'))
+        report = Report.create(diagnostic=data.get('diagnostic'), exercise_id= data.get('exercise_id'), profesional_id=data.get('profesional_id'), user_id=data.get('user_id'))
 
         if not isinstance(report, Report):
             return jsonify({'msg': "Ha ocurrido un problema"}), 500
@@ -134,22 +134,18 @@ def reports(id):
         report_to_list = list(map(lambda el: el.serialize(), report))
         return jsonify(report_to_list), 200
 
-<<<<<<< HEAD
-@app.route('/<int:id>/reports/exercise', methods=['GET','POST'])
-=======
-@app.route('/<int:id>/reports/exercises', methods=['GET','POST'])
->>>>>>> 4705d5194a9b31d69607c574936af48b0d8ab62c
-def exercises(id):
+@app.route('/reports/exercise', methods=['GET','POST'])
+def exercises():
     if request.method == 'POST':
         data = request.json
         print(f"data: {data}")
-        exercise = Exercise.create(description=data.get('description'), status=data.get('status'), exercise_id=id)
+        exercise = Exercise.create(description=data.get('description'), status=data.get('status'))
         
         if not isinstance(exercise, Exercise):
             return jsonify({'msg': "Ha ocurrido un problema"}), 500
         return jsonify(exercise.serialize()), 201
     else:
-        exercise = Exercise.query.filter_by(exercise_id=id).all()
+        exercise = Exercise.query.all()
         exercise_to_list = list(map(lambda el: el.serialize(), exercise))
         return jsonify(exercise_to_list), 200
 
