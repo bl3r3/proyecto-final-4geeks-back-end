@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: cb4b29c02fec
+Revision ID: d85b217ea933
 Revises: 
-Create Date: 2021-06-09 19:11:37.554187
+Create Date: 2021-06-22 19:05:23.797625
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'cb4b29c02fec'
+revision = 'd85b217ea933'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -23,9 +23,9 @@ def upgrade():
     sa.Column('name', sa.String(length=120), nullable=False),
     sa.Column('last_name', sa.String(length=120), nullable=False),
     sa.Column('email', sa.String(length=120), nullable=False),
+    sa.Column('salt', sa.String(length=100), nullable=False),
     sa.Column('hased_password', sa.String(length=240), nullable=False),
     sa.Column('type', sa.String(length=50), nullable=False),
-    sa.Column('is_profesional', sa.Boolean(), nullable=True),
     sa.Column('is_verified', sa.Boolean(), nullable=True),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email')
@@ -34,8 +34,8 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('created_date', sa.DateTime(timezone=True), nullable=True),
     sa.Column('day_date', sa.String(length=50), nullable=False),
-    sa.Column('start_date', sa.String(length=50), nullable=False),
-    sa.Column('end_date', sa.String(length=50), nullable=False),
+    sa.Column('schedule', sa.String(length=50), nullable=False),
+    sa.Column('via', sa.String(length=50), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=True),
     sa.Column('profesional_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['profesional_id'], ['person.id'], ),

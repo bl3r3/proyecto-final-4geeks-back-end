@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User, Profesional, Person, Appointment
+from models import db, User, Profesional, Person, Appointment, Report, Exercise
 from flask_jwt_extended import create_access_token, JWTManager
 #from models import Person
 
@@ -119,6 +119,47 @@ def dates(id):
         appointment_to_list = list(map(lambda el: el.serialize(), appointment))
         return jsonify(appointment_to_list), 200
 
+
+@app.route('/<int:id>/reports', methods=['GET','POST'])
+def reports(id):
+    if request.method == 'POST':
+        data = request.json
+        new_dict = {
+            "diagnostic": data["data"]["diagnostic"],
+            "exercise_id": data["data"]["exercise_id"],
+            "user_id": data["data"]["user_id"]
+        }
+
+        report = Report.create(diagnostic=new_dict.get('diagnostic'), exercise_id= new_dict.get('exercise_id'), profesional_id=id, user_id=new_dict.get('user_id'))
+        
+        print(report)
+        if not isinstance(report, Report):
+            return jsonify({'msg': "Ha ocurrido un problema"}), 500
+        return jsonify(report.serialize()), 201
+    else:
+        report = Report.query.filter_by(user_id=id).all()
+        report_to_list = list(map(lambda el: el.serialize(), report))
+        return jsonify(report_to_list), 200
+
+@app.route('/<int:id>/reports', methods=['GET','POST'])
+def exercises(id):
+    if request.method == 'POST':
+        data = request.json
+        new_dict = {
+            "description": data["data"]["description"],
+            "status": data["data"]["status"],
+        }
+
+        exercise = Exercise.create(description=new_dict.get('description'), status= new_dict.get('status'), exercise_id=id)
+        
+        print(exercise)
+        if not isinstance(exercise, Exercise):
+            return jsonify({'msg': "Ha ocurrido un problema"}), 500
+        return jsonify(exercise.serialize()), 201
+    else:
+        exercise = Exercise.query.filter_by(exercise_id=id).all()
+        exercise_to_list = list(map(lambda el: el.serialize(), exercise))
+        return jsonify(exercise_to_list), 200
 
 
 # this only runs if `$ python src/main.py` is executed
