@@ -70,7 +70,7 @@ def log_in():
     user = User.query.filter_by(email=data['email']).one_or_none()
 
     if user is None:
-        return jsonify({"msg": "El user no existe"}), 404
+        return jsonify({"msg": "El usuario no existe"}), 404
 
     if not user.check_password(data.get('password')):
         return jsonify({"msg": "bad credentials"}), 400
@@ -84,7 +84,7 @@ def log_in():
 
 @app.route("/profesionals", methods=["GET"])
 def get_profesionals():
-    profesionals = Profesional.query.all();
+    profesionals = Profesional.query.all()
     profesionals_to_list = list(map(lambda el: el.serialize(), profesionals))
     return jsonify(profesionals_to_list), 200
 
@@ -123,15 +123,9 @@ def dates(id):
 def reports(id):
     if request.method == 'POST':
         data = request.json
-        new_dict = {
-            "diagnostic": data["data"]["diagnostic"],
-            "exercise_id": data["data"]["exercise_id"],
-            "user_id": data["data"]["user_id"]
-        }
+        print(f"data: {data}")
+        report = Report.create(diagnostic=data.get('diagnostic'), exercise_id= data.get('exercise_id'), profesional_id=id, user_id=data.get('user_id'))
 
-        report = Report.create(diagnostic=new_dict.get('diagnostic'), exercise_id= new_dict.get('exercise_id'), profesional_id=id, user_id=new_dict.get('user_id'))
-        
-        print(report)
         if not isinstance(report, Report):
             return jsonify({'msg': "Ha ocurrido un problema"}), 500
         return jsonify(report.serialize()), 201
@@ -140,18 +134,17 @@ def reports(id):
         report_to_list = list(map(lambda el: el.serialize(), report))
         return jsonify(report_to_list), 200
 
+<<<<<<< HEAD
 @app.route('/<int:id>/reports/exercise', methods=['GET','POST'])
+=======
+@app.route('/<int:id>/reports/exercises', methods=['GET','POST'])
+>>>>>>> 4705d5194a9b31d69607c574936af48b0d8ab62c
 def exercises(id):
     if request.method == 'POST':
         data = request.json
-        new_dict = {
-            "description": data["data"]["description"],
-            "status": data["data"]["status"],
-        }
-
-        exercise = Exercise.create(description=new_dict.get('description'), status= new_dict.get('status'), exercise_id=id)
+        print(f"data: {data}")
+        exercise = Exercise.create(description=data.get('description'), status=data.get('status'), exercise_id=id)
         
-        print(exercise)
         if not isinstance(exercise, Exercise):
             return jsonify({'msg': "Ha ocurrido un problema"}), 500
         return jsonify(exercise.serialize()), 201

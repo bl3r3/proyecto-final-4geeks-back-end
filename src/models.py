@@ -182,7 +182,7 @@ class Exercise(db.Model):
   def __init__(self, **kwargs):
     print(kwargs)
     self.description = kwargs.get('diagnostic')
-    self.status = kwargs.get('exercise_id')
+    self.status = kwargs.get('status')
 
   @classmethod
   def create(cls, **kwargs):
