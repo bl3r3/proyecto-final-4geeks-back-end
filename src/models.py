@@ -34,7 +34,6 @@ class Person(db.Model):
 
 
 #USER
-
 class User(Person):
   __tablename__ = None
   __mapper_args__ = {
@@ -82,7 +81,7 @@ class User(Person):
       # do not serialize the password, its a security breach
     }
 
-#PROFESIONAL
+#PROFESSIONAL
 class Profesional(Person):
   __tablename__ = None
   is_verified = db.Column(db.Boolean, unique=False, default=False)
@@ -114,8 +113,6 @@ class Profesional(Person):
 
     return profesional
 
-
-
   def serialize(self):
     return {
       "id": self.id,
@@ -133,16 +130,79 @@ class Profesional(Person):
   def check_password(self, password):
     return check_password_hash(self.hased_password, f"{password}{self.salt}")
 
+
+#REPORTE DEL PACIENTE
 class Report(db.Model):
   __tablename__ = 'report'
   id = db.Column(db.Integer, primary_key=True)
   diagnostic = db.Column(db.String(240))
-  progress = db.Column(db.String(240))
-  finished = db.Column(db.String(240))
-  bitacora = db.Column(db.String(240))
+  exercise_id = db.Column(db.Integer, db.ForeignKey('exercise.id'))
   user_id = db.Column(db.Integer, db.ForeignKey('person.id'))
   profesional_id = db.Column(db.Integer, db.ForeignKey('person.id'))
 
+  def __init__(self, **kwargs):
+    print(kwargs)
+    self.diagnostic = kwargs.get('diagnostic')
+    self.exercise_id = kwargs.get('exercise_id')
+    self.user_id = kwargs.get('user_id')
+    self.profesional_id = kwargs.get('profesional_id')
+
+  @classmethod
+  def create(cls, **kwargs):
+    report = cls(**kwargs)
+    db.session.add(report)
+
+    try:
+      db.session.commit()
+    except Exception as error:
+      print(error.args)
+      db.session.rollback()
+      return False
+    return report
+
+  def serialize(self):
+    return {
+      "id": self.id,
+      "diagnostic": self.diagnostic,
+      "exercise_id": self.exercise_id,
+      "user_id": self.user_id,
+      "profesional_id": self.profesional_id,
+      "profesional": self.profesional.serialize()
+    }
+
+
+#EJERCICIOS DEL REPORTE
+class Exercise(db.Model):
+  __tablename__ = 'exercise'
+  id = db.Column(db.Integer, primary_key=True)
+  description = db.Column(db.String(240), nullable=False)
+  #THIS COLUMN WILL BE USED FOR DECIDE EXERCISE STATUS
+  status = db.Column(db.String(50), nullable=False)
+
+  def __init__(self, **kwargs):
+    print(kwargs)
+    self.description = kwargs.get('diagnostic')
+    self.status = kwargs.get('exercise_id')
+
+  @classmethod
+  def create(cls, **kwargs):
+    exercise = cls(**kwargs)
+    db.session.add(exercise)
+
+    try:
+      db.session.commit()
+    except Exception as error:
+      print(error.args)
+      db.session.rollback()
+      return False
+    return exercise
+
+  def serialize(self):
+    return {
+      "id": self.id,
+      "description": self.description,
+      "status": self.status
+    }
 
 
 class Appointment(db.Model):
