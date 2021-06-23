@@ -48,7 +48,6 @@ def sign_up():
     print(f"data: {data}")
     user = User.create(name=data.get('name'), last_name= data.get('last_name'), email=data.get('email'), password=data.get('password')
     )
-    
     if not isinstance(user, User):
         return jsonify({'msg': "Ha ocurrido un problema"}), 500
     return jsonify(user.serialize()), 201
@@ -57,7 +56,7 @@ def sign_up():
 def sign_up_profesional():
     data = request.json
     print(f"data: {data}")
-    profesional = Profesional.create_profesional(name=data.get('name'), last_name= data.get('last_name'), email=data.get('email'), password=data.get('password'), is_verified=data.get('is_verified')
+    profesional = Profesional.create_profesional(name=data.get('name'), last_name= data.get('last_name'), email=data.get('email'), password=data.get('password'), is_verified=True
     )
     
     if not isinstance(profesional, Profesional):
