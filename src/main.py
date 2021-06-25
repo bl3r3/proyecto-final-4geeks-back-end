@@ -67,7 +67,7 @@ def sign_up_profesional():
 def log_in():
     data = request.json
     print(f"data: {data}")
-    user = User.query.filter_by(email=data['email']).one_or_none()
+    user = Person.query.filter_by(email=data['email']).one_or_none()
 
     if user is None:
         return jsonify({"msg": "El usuario no existe"}), 404
