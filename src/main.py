@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User, Profesional, Person, Appointment, Report, Exercise
+from models import db, User, Profesional, Person, Appointment
 from flask_jwt_extended import create_access_token, JWTManager
 #from models import Person
 
@@ -119,35 +119,35 @@ def dates(id):
         return jsonify(appointment_to_list), 200
 
 
-@app.route('/reports', methods=['GET','POST'])
-def reports():
-    if request.method == 'POST':
-        data = request.json
-        print(f"data: {data}")
-        report = Report.create(diagnostic=data.get('diagnostic'), exercise_id= data.get('exercise_id'), profesional_id=data.get('profesional_id'), user_id=data.get('user_id'))
+# @app.route('/reports', methods=['GET','POST'])
+# def reports():
+#     if request.method == 'POST':
+#         data = request.json
+#         print(f"data: {data}")
+#         report = Report.create(diagnostic=data.get('diagnostic'), exercise_id= data.get('exercise_id'), profesional_id=data.get('profesional_id'), user_id=data.get('user_id'))
 
-        if not isinstance(report, Report):
-            return jsonify({'msg': "Ha ocurrido un problema"}), 500
-        return jsonify(report.serialize()), 201
-    else:
-        report = Report.query.filter_by(user_id=id).all()
-        report_to_list = list(map(lambda el: el.serialize(), report))
-        return jsonify(report_to_list), 200
+#         if not isinstance(report, Report):
+#             return jsonify({'msg': "Ha ocurrido un problema"}), 500
+#         return jsonify(report.serialize()), 201
+#     else:
+#         report = Report.query.filter_by(user_id=id).all()
+#         report_to_list = list(map(lambda el: el.serialize(), report))
+#         return jsonify(report_to_list), 200
 
-@app.route('/reports/exercise', methods=['GET','POST'])
-def exercises():
-    if request.method == 'POST':
-        data = request.json
-        print(f"data: {data}")
-        exercise = Exercise.create(description=data.get('description'), status=data.get('status'))
+# @app.route('/reports/exercise', methods=['GET','POST'])
+# def exercises():
+#     if request.method == 'POST':
+#         data = request.json
+#         print(f"data: {data}")
+#         exercise = Exercise.create(description=data.get('description'), status=data.get('status'))
         
-        if not isinstance(exercise, Exercise):
-            return jsonify({'msg': "Ha ocurrido un problema"}), 500
-        return jsonify(exercise.serialize()), 201
-    else:
-        exercise = Exercise.query.all()
-        exercise_to_list = list(map(lambda el: el.serialize(), exercise))
-        return jsonify(exercise_to_list), 200
+#         if not isinstance(exercise, Exercise):
+#             return jsonify({'msg': "Ha ocurrido un problema"}), 500
+#         return jsonify(exercise.serialize()), 201
+#     else:
+#         exercise = Exercise.query.all()
+#         exercise_to_list = list(map(lambda el: el.serialize(), exercise))
+#         return jsonify(exercise_to_list), 200
 
 
 # this only runs if `$ python src/main.py` is executed

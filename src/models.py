@@ -15,8 +15,8 @@ class Person(db.Model):
   hased_password = db.Column(db.String(240), unique=False, nullable=False)
   dates_as_profesional = db.relationship('Appointment', foreign_keys='Appointment.profesional_id', backref="profesional")
   dates_as_user = db.relationship('Appointment', foreign_keys='Appointment.user_id', backref="user")
-  report_as_profesional = db.relationship('Report', foreign_keys='Report.profesional_id', backref="profesional")
-  report_as_user = db.relationship('Report', foreign_keys='Report.user_id', backref="user")
+  # report_as_profesional = db.relationship('Report', foreign_keys='Report.profesional_id', backref="profesional")
+  # report_as_user = db.relationship('Report', foreign_keys='Report.user_id', backref="user")
   #THIS COLUMN WILL BE USED FOR DECIDE USER TYPES
   type = db.Column(db.String(50), nullable=False)
 
@@ -132,78 +132,73 @@ class Profesional(Person):
 
 
 #REPORTE DEL PACIENTE
-class Report(db.Model):
-  __tablename__ = 'report'
-  id = db.Column(db.Integer, primary_key=True)
-  diagnostic = db.Column(db.String(240))
-  user_id = db.Column(db.Integer, db.ForeignKey('person.id'))
-  profesional_id = db.Column(db.Integer, db.ForeignKey('person.id'))
-  exercise_id = db.Column(db.Integer, db.ForeignKey('exercise.id'))
+# class Report(db.Model):
+#   __tablename__ = 'report'
+#   id = db.Column(db.Integer, primary_key=True)
+#   diagnostic = db.Column(db.String(240))
+#   paciente = db.Column(db.String(240))
 
-  def __init__(self, **kwargs):
-    print(kwargs)
-    self.diagnostic = kwargs.get('diagnostic')
-    self.exercise_id = kwargs.get('exercise_id')
-    self.user_id = kwargs.get('user_id')
-    self.profesional_id = kwargs.get('profesional_id')
+#   def __init__(self, **kwargs):
+#     print(kwargs)
+#     self.diagnostic = kwargs.get('diagnostic')
+#     self.paciente = kwargs.get('paciente')
 
-  @classmethod
-  def create(cls, **kwargs):
-    report = cls(**kwargs)
-    db.session.add(report)
+#   @classmethod
+#   def create(cls, **kwargs):
+#     report = cls(**kwargs)
+#     db.session.add(report)
 
-    try:
-      db.session.commit()
-    except Exception as error:
-      print(error.args)
-      db.session.rollback()
-      return False
-    return report
+#     try:
+#       db.session.commit()
+#     except Exception as error:
+#       print(error.args)
+#       db.session.rollback()
+#       return False
+#     return report
 
-  def serialize(self):
-    return {
-      "id": self.id,
-      "diagnostic": self.diagnostic,
-      "exercise_id": self.exercise_id,
-      "user_id": self.user_id,
-      "profesional_id": self.profesional_id,
-      "profesional": self.profesional.serialize()
-    }
+#   def serialize(self):
+#     return {
+#       "id": self.id,
+#       "diagnostic": self.diagnostic,
+#       "exercise_id": self.exercise_id,
+#       "user_id": self.user_id,
+#       "profesional_id": self.profesional_id,
+#       "profesional": self.profesional.serialize()
+#     }
 
 
 #EJERCICIOS DEL REPORTE
-class Exercise(db.Model):
-  __tablename__ = 'exercise'
-  id = db.Column(db.Integer, primary_key=True)
-  description = db.Column(db.String(240), nullable=False)
-  #THIS COLUMN WILL BE USED FOR DECIDE EXERCISE STATUS
-  status = db.Column(db.Boolean, unique=False, default=False)
-  report = db.relationship("Report", backref="exercise")
+# class Exercise(db.Model):
+#   __tablename__ = 'exercise'
+#   id = db.Column(db.Integer, primary_key=True)
+#   description = db.Column(db.String(240), nullable=False)
+#   #THIS COLUMN WILL BE USED FOR DECIDE EXERCISE STATUS
+#   status = db.Column(db.Boolean, unique=False, default=False)
 
-  def __init__(self, **kwargs):
-    print(kwargs)
-    self.description = kwargs.get('description')
-    self.status = kwargs.get('status')
+#   def __init__(self, **kwargs):
+#     print(kwargs)
+#     self.description = kwargs.get('description')
+#     self.status = kwargs.get('status')
 
-  @classmethod
-  def create(cls, **kwargs):
-    exercise = cls(**kwargs)
-    db.session.add(exercise)
+#   @classmethod
+#   def create(cls, **kwargs):
+#     exercise = cls(**kwargs)
+#     db.session.add(exercise)
 
-    try:
-      db.session.commit()
-    except Exception as error:
-      print(error.args)
-      db.session.rollback()
-      return False
-    return exercise
+#     try:
+#       db.session.commit()
+#     except Exception as error:
+#       print(error.args)
+#       db.session.rollback()
+#       return False
+#     return exercise
 
-  def serialize(self):
-    return {
-      "id": self.id,
-      "description": self.description,
-      "status": self.status
-    }
+#   def serialize(self):
+#     return {
+#       "id": self.id,
+#       "description": self.description,
+#       "status": self.status
+#     }
 
 
 class Appointment(db.Model):
